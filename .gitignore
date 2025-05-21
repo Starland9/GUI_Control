@@ -1,0 +1,114 @@
+# Environnement Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Fichiers de cache et de compilation
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers temporaires
+.DS_Store
+.env
+.env.local
+.env.*.local
+.env.*
+
+# Fichiers de log
+*.log
+automation.log
+
+# Fichiers de configuration personnels
+.config
+
+# Fichiers de sauvegarde
+*~
+*.swp
+*.swo
+
+# Fichiers de débogage
+*.pdb
+
+# Fichiers de tests
+.htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+
+# Fichiers de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Fichiers de documentation
+_docs/build/
+_docs/_build/
+
+# Fichiers de débogage
+*.log
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration personnels
+.env
+.env.local
+.env.*.local
+.env.*
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Fichiers de cache
+.cache/
+
+# Fichiers de build
+build/
+dist/
+*.egg-info/
+
+# Fichiers de test
+.coverage
+.coverage.*
+.coverage.xml
+.cache/
+*.cover
+
+# Fichiers de documentation
+_docs/build/
+_docs/_build/
+
+# Project exclude paths
+/.venv/
