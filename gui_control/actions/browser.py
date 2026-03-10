@@ -39,12 +39,9 @@ class Browser:
             raise RuntimeError("search bar template not found")
         pyautogui.typewrite(query, interval=Config.TYPE_DELAY)
         pyautogui.press("enter")
-        time.sleep(Config.DEFAULT_WAIT_TIME)
-        if not self.controller.click_template(
-                "google_search_result", template_dirs=self.template_dirs):
-            raise RuntimeError("search results template not found")
 
     # example of additional browser-related methods ------------------------------------------------
+
     def new_tab(self) -> None:
         """Opens a new browser tab using the standard shortcut.
 
@@ -58,3 +55,31 @@ class Browser:
         """Bookmarks the current page (Ctrl‑D shortcut)."""
         pyautogui.hotkey("ctrl", "d")
         time.sleep(Config.DEFAULT_WAIT_TIME)
+
+    def open_url(self, url: str) -> None:
+        """Opens the specified URL in the browser."""
+        subprocess.run(["sensible-browser", url])
+        time.sleep(Config.DEFAULT_WAIT_TIME)
+
+    def select_search_result(self) -> None:
+        """Selects a search result"""
+        self.controller.click_template(
+            "google_search_result", template_dirs=self.template_dirs)
+        time.sleep(Config.DEFAULT_WAIT_TIME)
+
+    def _scroll(self, clicks: int, delay: float = 0, times: int = 1) -> None:
+        """Scroll the mouse wheel a given number of clicks."""
+        for _ in range(times):
+            pyautogui.scroll(clicks)
+            if delay > 0:
+                time.sleep(delay)
+
+        time.sleep(Config.DEFAULT_WAIT_TIME)
+
+    def scroll_down(self, clicks: int = 100, delay: float = 0, times: int = 1) -> None:
+        """Scroll down by a given number of clicks."""
+        self._scroll(-clicks, delay=delay, times=times)
+
+    def scroll_up(self, clicks: int = 100, delay: float = 0, times: int = 1) -> None:
+        """Scroll up by a given number of clicks."""
+        self._scroll(clicks, delay=delay, times=times)

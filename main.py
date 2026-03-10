@@ -1,5 +1,6 @@
 import logging
 
+from gui_control.actions.whatsapp import Whatsapp
 from gui_control.logger import setup_logging
 import gui_control as bot
 from gui_control.config import Config
@@ -17,24 +18,14 @@ if __name__ == "__main__":
             raise FileNotFoundError(
                 f"Dossier templates non trouvé: {Config.TEMPLATES_DIR}")
 
-        # Exécution des tâches via les composants modernes
-        from gui_control.actions.browser import Browser
-        from gui_control.actions.windows import Windows
-
         controller = bot.GuiController(
             grabber=bot.ScreenGrabber(),
             detector=bot.TemplateDetector(
-                Config.TEMPLATES_DIR, Config.TEMPLATE_MATCH_THRESHOLD),
+                Config.TEMPLATES_DIR / "whatsapp" / "message_input_field", Config.TEMPLATE_MATCH_THRESHOLD),
         )
-        browser = Browser(controller)
-        windows = Windows(controller)
-
-        browser._open()
-        windows.search("Visual Studio Code")
-
-        # exemples d'extensions de la classe Browser
-        browser.new_tab()
-        browser.bookmark_page()
+        
+        whatsapp = Whatsapp(controller, template_dirs=[str(Config.TEMPLATES_DIR / "whatsapp")])
+        whatsapp.send_message("John Doe", "Hello from GUI_Control!")
 
         logging.info("Automatisation terminée avec succès")
     except Exception as e:
