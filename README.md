@@ -13,7 +13,9 @@ Un outil d'automatisation GUI qui utilise la reconnaissance d'images pour intera
 
 ## Configuration
 
-La configuration est gérée via le fichier [config.py](config.py) qui contient :
+La configuration est gérée via `gui_control/config.py` et supporte la surcharge
+par des variables d'environnement ou un fichier `.env` (voir `.env.example`).
+Les options comprennent :
 - Paramètres d'affichage
 - Chemins des assets
 - Temps d'attente
@@ -37,9 +39,82 @@ pip install -r requirements.txt
 
 ## Utilisation
 
-Exécutez le script principal :
+**Via le script d'exemple**
+
 ```bash
 python main.py
+```
+
+**En tant que bibliothèque**
+
+Vous pouvez importer et utiliser les classes directement ; certaines
+fonctionnalités sont désormais organisées en **composants** (par ex. le
+navigateur) :
+
+```python
+from gui_control.logger import setup_logging
+from gui_control.config import Config
+from gui_control.controller import GuiController
+from gui_control.screenshot import ScreenGrabber
+from gui_control.detector import TemplateDetector
+from gui_control.actions.browser import Browser
+
+setup_logging()
+
+controller = GuiController(
+    grabber=ScreenGrabber(),
+    detector=TemplateDetector(Config.TEMPLATES_DIR, Config.TEMPLATE_MATCH_THRESHOLD),
+)
+browser = Browser(controller)
+
+# un composant expose plusieurs opérations
+browser.search("Développer en java")
+
+# composant Windows
+from gui_control.actions.windows_search import Windows
+windows = Windows(controller)
+windows.search("Visual Studio Code")
+
+# Contrôleur : on peut cliquer sur un dossier de templates spécifique
+controller.click(template_dir=Path("./assets/google_search_bar"))
+
+# on peut également utiliser les helpers du contrôleur pour résoudre les
+# templates à partir de plusieurs répertoires
+controller.click_template("google_search_bar", template_dirs=["./assets/custom"])
+
+# on peut aussi passer des dossiers de templates personnalisés aux composants
+browser = Browser(controller, template_dirs=["./assets/custom"])
+browser.search("quelque chose")
+browser.new_tab()
+browser.bookmark_page()
+```
+
+La version précédente (`BrowserSearch`) reste disponible pour compatibilité,
+mais le composant `Browser` peut être étendu avec de nouvelles méthodes
+(p.ex. ouvrir un onglet, ajouter un favori, rafraîchir la page…).
+
+L’implémentation du contrôleur a évolué :
+
+* ``GuiController.click(template_dir=None, retries=None)`` permet de cliquer
+  en spécifiant un répertoire de templates à la volée.
+* ``GuiController.click_template(name, template_dirs=None)`` recherche un
+  template parmi plusieurs dossiers et clique automatiquement.
+
+Ces helpers sont utilisés en interne par les composants, mais vous pouvez
+les appeler directement si vous avez besoin d’une logique personnalisée.
+
+Un autre composant fourni est `Windows` ; il encapsule les actions liées
+au menu démarrer et aux raccourcis Windows. Il expose `search`,
+`open_settings`, `open_run_dialog` et utilise également ``template_dirs``
+comme les autres composants.
+
+Le module `gui_control` expose aussi une interface de haut niveau similaire
+à l'ancien script :
+
+```python
+import gui_control
+
+gui_control.search_in_browser("Salut")
 ```
 
 Le script va :
@@ -51,13 +126,23 @@ Le script va :
 
 ```
 GUI_Control/
-├── assets/              # Dossier des templates d'images
-├── config.py           # Configuration du projet
-├── main.py             # Point d'entrée du programme
-├── requirements.txt    # Dépendances Python
-├── script.html         # Interface utilisateur (si implémentée)
-├── test.py             # Tests unitaires
-└── automation.log      # Fichier de log
+├── assets/                       # Dossier des templates d'images
+├── gui_control/                  # package principal
+│   ├── __init__.py
+│   ├── config.py                 # configuration loader
+│   ├── controller.py             # clics / automatisation générique
+│   ├── detector.py               # recherche d'objets par template
+│   ├── screenshot.py             # encapsule mss
+│   ├── exceptions.py             # erreurs métier
+│   ├── logger.py                 # configuration du logging
+│   └── actions/                  # comportements spécifiques
+│       ├── browser.py            # recherche Google
+│       └── windows_search.py     # recherche de logiciel
+├── main.py                       # point d'entrée (exemple)
+├── requirements.txt              # dépendances Python
+├── tests/                        # tests unitaires (pytest)
+├── .env.example                  # modèle de configuration
+└── automation.log                # fichier de log (généré à l'exécution)
 ```
 
 ## Débogage
